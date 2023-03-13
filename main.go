@@ -40,6 +40,14 @@ func main() {
 	nrApp, nrErr = newrelic.NewApplication(
 		newrelic.ConfigAppName(os.Getenv("APP_NAME")),
 		newrelic.ConfigLicense(os.Getenv("NEW_RELIC_LICENSE_KEY")),
+		func(config *newrelic.Config) {
+			config.Labels = map[string]string{
+				"Env":         "Instruqt",
+				"Workshop":    "DORA",
+				"Engineer":    "Name",
+				"Description": "Gin",
+			}
+		},
 		// newrelic.ConfigDebugLogger(os.Stdout),
 	)
 
