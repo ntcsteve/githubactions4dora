@@ -7,8 +7,8 @@ import (
 	"time"
 
 	"github.com/gin-gonic/gin"
-	// Workshop > nrgin integration package
-	// "github.com/newrelic/go-agent/v3/integrations/nrgin"
+	// nrgin integration package
+	"github.com/newrelic/go-agent/v3/integrations/nrgin"
 	"github.com/newrelic/go-agent/v3/newrelic"
 )
 
@@ -30,7 +30,7 @@ var games = []game{
 }
 
 var (
-	// Making app and err a global variable
+	// making app and err a global variable
 	nrApp *newrelic.Application
 	nrErr error
 )
@@ -43,19 +43,19 @@ func main() {
 		// newrelic.ConfigDebugLogger(os.Stdout),
 	)
 
-	// If an application could not be created then err will reveal why.
+	// if an application could not be created then err will reveal why.
 	if nrErr != nil {
 		fmt.Println("unable to start NR instrumentation - ", nrErr)
 	}
 
-	// Not necessary for monitoring a production application with a lot of data.
+	// not necessary for monitoring a production application with a lot of data.
 	nrApp.WaitForConnection(5 * time.Second)
 
 	router := gin.Default()
 
-	// Workshop > Package nrgin instruments https://github.com/gin-gonic/gin applications.
+	// package nrgin instruments https://github.com/gin-gonic/gin applications.
 	// https://pkg.go.dev/github.com/newrelic/go-agent/v3/integrations/nrgin#section-readme
-	// Put your code here
+	router.Use(nrgin.Middleware(nrApp))
 
 	router.GET("/games", getgames)
 	router.GET("/games/:id", getgameByID)
@@ -63,7 +63,7 @@ func main() {
 
 	router.Run("localhost:8080")
 
-	// Wait for shut down to ensure data gets flushed
+	// wait for shut down to ensure data gets flushed
 	nrApp.Shutdown(5 * time.Second)
 }
 
@@ -76,12 +76,12 @@ func getgames(c *gin.Context) {
 func postgames(c *gin.Context) {
 	var newgame game
 
-	// Call BindJSON to bind the received JSON to newgame.
+	// call BindJSON to bind the received JSON to newgame.
 	if err := c.BindJSON(&newgame); err != nil {
 		return
 	}
 
-	// Add the new game to the slice.
+	// add the new game to the slice.
 	games = append(games, newgame)
 	c.IndentedJSON(http.StatusCreated, newgame)
 }
@@ -91,7 +91,7 @@ func postgames(c *gin.Context) {
 func getgameByID(c *gin.Context) {
 	id := c.Param("id")
 
-	// Loop through the list of games, looking for an game whose ID value matches the parameter.
+	// loop through the list of games, looking for an game whose ID value matches the parameter.
 	for _, a := range games {
 		if a.ID == id {
 			c.IndentedJSON(http.StatusOK, a)
