@@ -44,7 +44,7 @@ func main() {
 			config.Labels = map[string]string{
 				"Env":         "Instruqt",
 				"Workshop":    "DORA",
-				"Engineer":    "Instruqt is here",
+				"Engineer":    "John Wick is here",
 				"Description": "Gin",
 			}
 		},
